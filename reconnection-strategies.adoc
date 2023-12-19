@@ -1,12 +1,37 @@
 //Exercise #1
 
-When a Mule app starts, a connectivity test runs on components, such as the HTTP or FTP connector, that need to connect to an external server and if the test fails the default behavior is to log a warning message and continue with the deployment of the app, instead of blocking the deployment.
+//add title to the page, then for skimming of the page better IA (information architecture) to have other h2,h3 etc to help people orien/group the information
+//greta thought: I like to work with a style guide up and we use a vale linter as well  
 
-You can modify this behavior by setting a number of reconnection attempts to try after an initial failure and by forcing the deployment to fail when all connection attempts fail.
+= Troublesooting connectivity tests for Mule app deployments
 
-* Fail Deployment (`failsDeployment`): Forces the deployment to fail if the connection fails and any configured reconection attempts are exhausted.
-* Reconnect (`reconnect`): Limits the number of reconnection attempts and the interval at which to execute them. For example, you might set a count of 5 reconnection attempts at a `frequency` of every `4000` milliseconds (ms). Defaults to 2 reconnection attempts at a frequency of `2000ms`.
-* Example with that fails after 5 reconnection attempts are exhausted:
+To start a Mule app, the connectivity test that runs no components such as HTTP/FTP connectors needs to connect to external servers. If the connectivity test fails, a warning messages appears in the logs, but the deployment isn't blocked from continuing. 
+
+
+== How to block a deployment if connectivity tests fail
+// list out <why> you would want to force a failure for a deployment 
+
+If a connectivity test fails repeatedly, you may want to configure a setting to block the deployment because <reason>. 
+
+Here are methods to block a deployment after repeated connectivity test failures:
+
+// it would be really nice to see this as a table, two columns, one row for each bullet point. In the first column the title is "Command", the second column is "Explanation"
+
+* Fail Deployment (`failsDeployment`): Forces the deployment to fail if the connection fails and any configured reconection attempts are exhausted. Setting a maximum number of attempts for connectivity tests limits resource usage.
+* Reconnect (`reconnect`): Limits the number of reconnection attempts within a specific interval of time starting from the initial test failure. For example, you might set a count of five reconnection attempts at a frequency of every 4000 milliseconds (ms). The default is two reconnection attempts at a frequency of 2000ms.
+* Reconnect Forever (`reconnect-forever`): Attempts to reconnect at a given interval. For example, every 4000 ms for as long as the app runs. The default is every 2000 ms. Since there is no limit on the number of retries, no value for count is specified.
+
+
+== Examples
+
+The following code snippets illustrate different configruation options for troubleshooting connectivity issues for Mule app deployments.   
+
+
+
+=== Block deployment after five reconnection attemps 
+
+
+The following code snippet shows how to block a deployment after five reconnection attempts.
 
 [source,xml]
 ----
@@ -19,11 +44,15 @@ You can modify this behavior by setting a number of reconnection attempts to try
 </http:request-config>
 ----
 
-* Reconnect Forever (reconnect-forever): Attempts to reconnect at a given interval, for example, every 4000 ms for as long as the app runs. Defaults to every 2000 ms. Because there is no limit on the number of retries, no value for count is specified.
 
-* Example that does not set a limit on the number of reconnection attempts:
 
-* [source,xml]
+=== No limit for reconnection attempts in a given interval
+
+// I feel like there is an opportunity here to add a note about possible issues with performance? or any downside to this model that the customer should know before adopting this guidance
+
+The following code snippet shows how to configure a Mule app to run reconnection attempts until connection is achieved in a given interval.  
+
+[source,xml]
 ----
 <http:request-connection host="https://jsonplaceholder.typicode.com/posts" port="80" >
   <reconnection>
