@@ -9,6 +9,6 @@ Have fun!
 To do the exercise:
 
 1. Sign in to GitHub.
-2. Edit the `pages/reconnection-strategies.adoc` file in GitHub.
+2. Edit the `reconnection-strategies.adoc` file in GitHub.
 3. Propose your changes.
 4. Create a pull request.
